@@ -1,0 +1,22 @@
+{
+  "name": "rossocketserver",
+  "version": "1.0.0",
+  "description": "Websocket server for communication with the UNICORN",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "UNICORN",
+    "socket",
+    "ros"
+  ],
+  "author": "Kanaljen",
+  "license": "ISC",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "http": "0.0.0",
+    "rosnodejs": "^3.0.1",
+    "socket.io": "^2.3.0"
+  }
+}
