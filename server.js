@@ -2,7 +2,14 @@
 const
   io = require('socket.io'),
   server = io.listen(8000),
-  const { spawn } = require('child_process')
+  { spawn } = require('child_process'),
+  { parseNodeInfo, parseTopicInfo } = require('./api/rosparser'),
+  RosNode = require('./api/rosnode'),
+  node = new RosNode();
+
+// node.addSubscriber('/commands', 'std_msgs/String', callback1);
+// node.publishJson({type:'setState',payload:'idle'});
+
 
 // IIFE function for calling the braoadcast functions
 (function() {
@@ -42,6 +49,13 @@ server.on("connection", (socket) => {
   socket.on('topicinfo', (e) => {
     rosInfo('rostopic',e)
   })
+  socket.on('navigation', (e) => {
+    node.publishJson('navigation',e)
+  })
+  socket.on('lidartext', (e) => {
+    node.publishJson('lidartext',e)
+  })
+
   function rosInfo(type,item) {
     return new Promise((resolve, reject) => {
       const child = spawn(type,['info',item])
@@ -59,44 +73,6 @@ server.on("connection", (socket) => {
     })
   }
 })
-
-// Function for parsing the stdout from rosnode info nodename
-function parseNodeInfo(data) {
-  let parsed = {puplications: [],
-                subscriptions: [],
-                services: [],
-                pid: 0}
-  data = data.toString().split('\n')
-  cat = -1
-  for (let item of data) {
-    if(item.includes('Pid:'))parsed.pid = parseInt(item.replace('Pid:','')) 
-    else if(item.includes(':'))cat += 1
-    else if(item.includes('*')){
-      if(cat == 0)parsed.puplications.push(item.replace(' * ',''))
-      else if(cat == 1)parsed.subscriptions.push(item.replace(' * ',''))
-      else if(cat == 2)parsed.services.push(item.replace(' * ',''))
-    }
-  }
-  return parsed
-}
-
-// Function for parsing the stdout from rostopic info topicname
-function parseTopicInfo(data) {
-  let parsed = {publishers: [],
-                type: '',
-                subscribers: []}
-  data = data.toString().split('\n')
-  cat = -1
-  for (let item of data) {
-    if(item.includes('Type: '))parsed.type = item.replace('Type: ','') 
-    else if(item.includes('ers:'))cat += 1
-    else if(item.includes('*')){
-      if(cat == 0)parsed.publishers.push(item.replace(' * ',''))
-      else if(cat == 1)parsed.subscribers.push(item.replace(' * ',''))
-    }
-  }
-  return parsed
-}
 
 /*
 function tx2_mem() {
