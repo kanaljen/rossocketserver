@@ -17,7 +17,7 @@
     "child_process": "^1.0.2",
     "http": "0.0.0",
     "rosnodejs": "^3.0.1",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.0",
     "system-health-monitor": "^1.2.0"
   }
 }
